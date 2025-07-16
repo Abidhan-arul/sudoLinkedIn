@@ -30,7 +30,19 @@ const Signup: React.FC = () => {
     })
       .then(async (res) => {
         if (res.status === 201) {
-          window.location.href = '/login';
+          // Auto-login after successful signup
+          const loginRes = await fetch('http://localhost:5000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+          if (loginRes.status === 200) {
+            const data = await loginRes.json();
+            localStorage.setItem('token', data.token);
+            window.location.href = '/profile';
+          } else {
+            window.location.href = '/login'; // fallback
+          }
         } else {
           const data = await res.json();
           setError(data.msg || 'Signup failed.');

@@ -22,7 +22,7 @@ const Login: React.FC = () => {
         if (res.status === 200) {
           const data = await res.json();
           localStorage.setItem('token', data.token);
-          window.location.href = '/'; // Redirect to home or profile
+          window.location.href = '/profile'; // Redirect to profile
         } else {
           const data = await res.json();
           setError(data.msg || 'Login failed.');
