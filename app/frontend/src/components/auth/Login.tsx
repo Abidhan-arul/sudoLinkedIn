@@ -13,7 +13,22 @@ const Login: React.FC = () => {
       return;
     }
     setError('');
-    // TODO: Call login API here
+    fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+      .then(async (res) => {
+        if (res.status === 200) {
+          const data = await res.json();
+          localStorage.setItem('token', data.token);
+          window.location.href = '/'; // Redirect to home or profile
+        } else {
+          const data = await res.json();
+          setError(data.msg || 'Login failed.');
+        }
+      })
+      .catch(() => setError('Network error. Please try again.'));
   };
 
   return (

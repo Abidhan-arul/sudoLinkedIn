@@ -23,7 +23,20 @@ const Signup: React.FC = () => {
       return;
     }
     setError('');
-    // TODO: Call signup API here
+    fetch('http://localhost:5000/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password }),
+    })
+      .then(async (res) => {
+        if (res.status === 201) {
+          window.location.href = '/login';
+        } else {
+          const data = await res.json();
+          setError(data.msg || 'Signup failed.');
+        }
+      })
+      .catch(() => setError('Network error. Please try again.'));
   };
 
   return (
