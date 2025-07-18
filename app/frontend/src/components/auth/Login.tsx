@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authApi } from './api';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       setError('Both fields are required.');
       return;
     }
     setError('');
-    // TODO: Call login API here
+    try {
+      const res = await authApi.login({ email, password });
+      if (res.token) {
+        localStorage.setItem('token', res.token);
+        navigate('/profile');
+      } else {
+        setError(res.msg || 'Login failed');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    }
   };
 
   return (

@@ -10,10 +10,30 @@ class Profile(db.Model):
     headline = db.Column(db.String(255))
     summary = db.Column(db.Text)
     location = db.Column(db.String(120))
-    user = db.relationship('User', backref=db.backref('profile', uselist=False))
-    skills = db.relationship('Skill', backref='profile', cascade='all, delete-orphan')
+    profile_image = db.Column(db.String(255))
+    profile_thumbnail = db.Column(db.String(255))
+    about = db.Column(db.Text)
+    skills = db.Column(db.Text)  # Comma-separated list
+    email = db.Column(db.String(120))
+    # Remove the duplicate user relationship - it's already defined in User model
     experiences = db.relationship('Experience', backref='profile', cascade='all, delete-orphan')
     educations = db.relationship('Education', backref='profile', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        """Convert profile to dictionary"""
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'full_name': self.full_name,
+            'headline': self.headline,
+            'summary': self.summary,
+            'location': self.location,
+            'profile_image': self.profile_image,
+            'profile_thumbnail': self.profile_thumbnail,
+            'about': self.about,
+            'skills': self.skills.split(',') if self.skills else [],
+            'email': self.email
+        }
 
 class Skill(db.Model):
     __tablename__ = 'skills'

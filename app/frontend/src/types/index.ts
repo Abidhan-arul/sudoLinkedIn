@@ -8,11 +8,18 @@ export interface User {
 export interface Profile {
   id: number;
   user_id: number;
-  bio: string;
-  location: string;
-  skills: string[];
-  experience: Experience[];
-  education: Education[];
+  full_name?: string;
+  headline?: string;
+  summary?: string;
+  about?: string;
+  location?: string;
+  skills?: string[];
+  email?: string;
+  profile_image?: string;
+  profile_thumbnail?: string;
+  profile_image_url?: string;
+  profile_thumbnail_url?: string;
+  // experience and education can be added later if needed
 }
 
 export interface Experience {
