@@ -10,6 +10,7 @@ class Profile(db.Model):
     headline = db.Column(db.String(255))
     summary = db.Column(db.Text)
     location = db.Column(db.String(120))
+    image_url = db.Column(db.String(255))
     user = db.relationship('User', backref=db.backref('profile', uselist=False))
     skills = db.relationship('Skill', backref='profile', cascade='all, delete-orphan')
     experiences = db.relationship('Experience', backref='profile', cascade='all, delete-orphan')

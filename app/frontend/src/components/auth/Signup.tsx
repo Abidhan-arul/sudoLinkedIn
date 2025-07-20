@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -7,9 +8,12 @@ const Signup: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { signup } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!username || !email || !password || !confirmPassword) {
       setError('All fields are required.');
       return;
@@ -22,8 +26,14 @@ const Signup: React.FC = () => {
       setError('Passwords do not match.');
       return;
     }
-    setError('');
-    // TODO: Call signup API here
+
+    try {
+      await signup(username, email, password);
+      console.log('Signup successful');
+      navigate('/profile');
+    } catch (err: any) {
+      setError(err.message || 'Signup failed.');
+    }
   };
 
   return (
@@ -92,4 +102,5 @@ const Signup: React.FC = () => {
   );
 };
 
-export default Signup; 
+export default Signup;
+

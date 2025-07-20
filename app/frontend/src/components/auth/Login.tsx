@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError('Both fields are required.');
       return;
     }
-    setError('');
-    // TODO: Call login API here
+
+    try {
+      await login(email, password);
+      console.log('Login successful');
+      navigate('/profile'); // redirect to profile page
+    } catch (err: any) {
+      setError(err.message || 'Login failed.');
+    }
   };
 
   return (
@@ -60,4 +70,5 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;
+
