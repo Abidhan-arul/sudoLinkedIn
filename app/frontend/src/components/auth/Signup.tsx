@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { authApi } from './api';
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -7,9 +8,12 @@ const Signup: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Signup form submitted");
     e.preventDefault();
+    setSuccess(false);
     if (!username || !email || !password || !confirmPassword) {
       setError('All fields are required.');
       return;
@@ -23,7 +27,20 @@ const Signup: React.FC = () => {
       return;
     }
     setError('');
-    // TODO: Call signup API here
+    try {
+      const res = await authApi.signup({ username, email, password });
+      if (res.msg === 'User created') {
+        setSuccess(true);
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+      } else {
+        setError(res.msg || 'Signup failed');
+      }
+    } catch (err) {
+      setError('Signup failed');
+    }
   };
 
   return (
@@ -76,6 +93,7 @@ const Signup: React.FC = () => {
             />
           </div>
           {error && <div className="text-red-500 text-sm">{error}</div>}
+          {success && <div className="text-green-600 text-sm">Signup successful! You can now log in.</div>}
           <button
             type="submit"
             className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus:outline-none"

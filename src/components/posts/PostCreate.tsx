@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { useAuth } from '../../context/AuthContext';
-import { postsApi } from './api';
 
 const PostCreate: React.FC = () => {
   const [content, setContent] = useState('');
@@ -11,7 +9,6 @@ const PostCreate: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const { user } = useAuth();
 
   const handleContentChange = (value: string) => {
     setContent(value);
@@ -35,22 +32,15 @@ const PostCreate: React.FC = () => {
       setError('Post content is required.');
       return;
     }
-    if (!user) {
-      setError('You must be logged in to create a post.');
-      return;
-    }
     setLoading(true);
-    try {
-      await postsApi.createPost(user.id, content, media || undefined);
+    // TODO: Implement API call
+    setTimeout(() => {
       setLoading(false);
       setSuccess(true);
       setContent('');
       setMedia(null);
       setPreviewUrl(null);
-    } catch (err) {
-      setLoading(false);
-      setError('Failed to create post.');
-    }
+    }, 1000);
   };
 
   return (

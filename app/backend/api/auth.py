@@ -4,13 +4,15 @@ from models.user import User
 from extensions import db, limiter
 import re
 
-auth_bp = Blueprint('auth', __name__, url_prefix="/api")
+auth_bp = Blueprint('auth', __name__, url_prefix="/api/auth")
 
 sanitize = lambda s: re.sub(r'[^\w@.\-]', '', s) if isinstance(s, str) else s
 
-@auth_bp.route('/signup', methods=['POST'])
+@auth_bp.route('/signup', methods=['POST', 'OPTIONS'])
 @limiter.limit("5 per minute")
 def signup():
+    if request.method == 'OPTIONS':
+        return '', 204
     data = request.get_json()
     username = sanitize(data.get('username', '').strip())
     email = sanitize(data.get('email', '').strip())
@@ -36,9 +38,11 @@ def signup():
         db.session.rollback()
         return jsonify({'msg': 'Registration failed', 'error': str(e)}), 400
 
-@auth_bp.route('/login', methods=['POST'])
-@limiter.limit("10 per minute")
+@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
+@limiter.limit("1000 per minute")
 def login():
+    if request.method == 'OPTIONS':
+        return '', 204
     data = request.get_json()
     identifier = sanitize(data.get('username', '').strip()) or sanitize(data.get('email', '').strip())
     password = data.get('password', '')

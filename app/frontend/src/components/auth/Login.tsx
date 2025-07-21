@@ -1,19 +1,36 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { authApi } from './api';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Both fields are required.');
+    if (!identifier || !password) {
+      setError('Username/Email and password are required.');
       return;
     }
     setError('');
-    // TODO: Call login API here
+    try {
+      const res = await authApi.login({ username: identifier, email: identifier, password });
+      console.log('Login response:', res);
+      if (res.user) {
+        login(res.user);
+        if (res.token) localStorage.setItem('token', res.token);
+        console.log('Saving user to localStorage:', res.user);
+        navigate('/'); // Redirect to home page after login
+      } else {
+        setError(res.msg || 'Login failed');
+      }
+    } catch (err) {
+      setError('Login failed');
+    }
   };
 
   return (
@@ -22,13 +39,14 @@ const Login: React.FC = () => {
         <h2 className="text-3xl font-bold text-center text-gray-900">Login</h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <label htmlFor="identifier" className="block text-sm font-medium text-gray-700">Username or Email</label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              id="identifier"
+              type="text"
+              value={identifier}
+              onChange={e => setIdentifier(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
+              placeholder="Username or Email"
               required
             />
           </div>

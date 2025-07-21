@@ -21,4 +21,17 @@ export const profileApi = {
     });
     return response.json();
   },
+
+  uploadProfileImage: async (image: File) => {
+    const formData = new FormData();
+    formData.append('image', image);
+    const response = await fetch(`${API_URL}/profile/image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: formData,
+    });
+    return response.json();
+  },
 }; 
