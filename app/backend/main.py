@@ -48,6 +48,10 @@ def create_app():
 
 app = create_app()
 
+from flask_migrate import upgrade
+with app.app_context():
+    upgrade()
+
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))
