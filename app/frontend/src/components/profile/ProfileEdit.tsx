@@ -5,7 +5,6 @@ import { useAuth } from '../../context/AuthContext';
 const initialSocial = { linkedin: '', twitter: '', github: '' };
 
 const ProfileEdit: React.FC = () => {
-  const [avatar, setAvatar] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [title, setTitle] = useState('');
@@ -68,8 +67,6 @@ const ProfileEdit: React.FC = () => {
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setAvatar(file);
-    setUploadError(null);
     if (file) {
       setAvatarPreview(URL.createObjectURL(file));
       setUploading(true);
