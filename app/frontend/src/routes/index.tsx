@@ -15,8 +15,8 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute />, // Protect all main app routes
     children: [
-      {
-        path: '/',
+  {
+    path: '/',
         element: <Layout />, // Layout with Navbar
         children: [
           { path: '/', element: <Feed /> },
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
           { path: '/jobs', element: <JobList /> },
           { path: '/messages', element: <MessageList /> },
         ],
-      },
+  },
     ],
   },
   { path: '/login', element: <Login /> },

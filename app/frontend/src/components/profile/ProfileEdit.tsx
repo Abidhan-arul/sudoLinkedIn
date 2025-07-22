@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { profileApi } from './api';
+import { useAuth } from '../../context/AuthContext';
 
 const initialSocial = { linkedin: '', twitter: '', github: '' };
 
@@ -21,6 +22,8 @@ const ProfileEdit: React.FC = () => {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [profileUpdated, setProfileUpdated] = useState(false);
 
+  const { user, login } = useAuth();
+
   const fetchProfile = async () => {
     setLoading(true);
     setError(null);
@@ -36,7 +39,7 @@ const ProfileEdit: React.FC = () => {
         twitter: data.profile?.social?.twitter || '',
         github: data.profile?.social?.github || '',
       });
-      if (data.profile?.avatarUrl) setAvatarPreview(data.profile.avatarUrl);
+      if (data.profile?.avatarUrl) setAvatarPreview(`http://localhost:5000${data.profile.avatarUrl}`);
     } catch (err) {
       setError('Failed to load profile.');
     } finally {
@@ -72,9 +75,21 @@ const ProfileEdit: React.FC = () => {
       setUploading(true);
       try {
         const res = await profileApi.uploadProfileImage(file);
-        if (res.avatarUrl) setAvatarPreview(res.avatarUrl);
+        console.log('Avatar upload response:', res);
+        if (res.avatarUrl) {
+          setAvatarPreview(`http://localhost:5000${res.avatarUrl}`);
+          // Update user object in localStorage/context
+          if (user) {
+            const updatedUser = { ...user, avatarUrl: res.avatarUrl };
+            login(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+          }
+          // Refetch profile to update UI
+          fetchProfile();
+        }
       } catch (err) {
         setUploadError('Failed to upload image.');
+        console.error('Avatar upload error:', err);
       } finally {
         setUploading(false);
       }
@@ -92,15 +107,18 @@ const ProfileEdit: React.FC = () => {
     setError(null);
     setSuccess(false);
     if (Object.keys(validation).length > 0) return;
+    const payload = {
+      full_name: name,
+      title,
+      location,
+      summary: bio,
+      skills: skills.split(',').map(s => s.trim()).filter(Boolean),
+      social,
+    };
+    console.log('Profile update payload:', payload);
     try {
-      await profileApi.updateProfile({
-        name,
-        title,
-        location,
-        summary: bio,
-        skills: skills.split(',').map(s => s.trim()).filter(Boolean),
-        social,
-      });
+      const res = await profileApi.updateProfile(payload);
+      console.log('Profile update response:', res);
       setSuccess(true);
       setProfileUpdated(true);
     } catch (err) {

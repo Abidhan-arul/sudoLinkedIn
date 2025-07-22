@@ -1,3 +1,5 @@
+import { useAuth } from '../../context/AuthContext';
+
 const API_URL = 'http://localhost:5000';
 
 export const profileApi = {
@@ -7,6 +9,12 @@ export const profileApi = {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
     });
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+      return {};
+    }
     return response.json();
   },
 
@@ -19,6 +27,12 @@ export const profileApi = {
       },
       body: JSON.stringify(profileData),
     });
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+      return {};
+    }
     return response.json();
   },
 
@@ -32,6 +46,12 @@ export const profileApi = {
       },
       body: formData,
     });
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+      return {};
+    }
     return response.json();
   },
 }; 

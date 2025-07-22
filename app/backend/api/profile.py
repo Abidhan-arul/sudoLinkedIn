@@ -8,7 +8,7 @@ import os
 import time
 from werkzeug.utils import secure_filename
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'tiff', 'svg'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../uploads/avatars')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -17,7 +17,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 profile_bp = Blueprint('profile', __name__)
-
+ 
 @profile_bp.before_request
 def log_jwt_errors():
     try:
@@ -105,7 +105,6 @@ def upload_profile_image():
     filename = secure_filename(f"avatar_{user_id}_{int(time.time())}.{ext}")
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     file.save(file_path)
-    # Optionally: image compression, resizing, thumbnail, etc.
     # Update profile
     profile = Profile.query.filter_by(user_id=user_id).first()
     if not profile:

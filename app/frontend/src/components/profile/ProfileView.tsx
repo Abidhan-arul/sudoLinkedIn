@@ -25,7 +25,7 @@ const ProfileView: React.FC = () => {
 
   // Map API data to ProfileHeader props
   const headerUser = profile && {
-    avatarUrl: profile.profile?.avatarUrl, // Add avatarUrl to your backend/profile if needed
+    avatarUrl: profile.profile?.avatarUrl ? `http://localhost:5000${profile.profile.avatarUrl}` : undefined,
     name: profile.username || profile.name || '',
     title: profile.profile?.title || '',
     location: profile.profile?.location || '',

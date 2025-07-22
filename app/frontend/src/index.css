@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply bg-gradient-to-br from-pink-100 via-blue-100 to-yellow-100 min-h-screen font-sans;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 /* Custom styles can be added below */
 @layer base {
   body {
