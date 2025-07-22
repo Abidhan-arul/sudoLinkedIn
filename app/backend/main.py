@@ -6,12 +6,19 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import os
 
+ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173,https://your-frontend-url.onrender.com').split(',')
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
     # Allow all origins for all routes and support credentials
-    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+    CORS(app,
+         origins=ALLOWED_ORIGINS,
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+         allow_headers=['Content-Type', 'Authorization', 'X-Requested-With'],
+         supports_credentials=True,
+         max_age=3600)
     db.init_app(app)
     limiter.init_app(app)
     Migrate(app, db)
